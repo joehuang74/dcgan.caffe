@@ -1,4 +1,4 @@
-net: "generator.prototxt"
+net: "discriminator.prototxt"
 display: 0
 # time_per_iter: 1
 base_lr: 0.0002
@@ -15,5 +15,6 @@ stepvalue: 220000
 max_iter: 15000
 solver_mode: GPU
 solver_type: ADAM
+#type: "SGD"
 device_id: 0
 

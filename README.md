@@ -1,56 +1,46 @@
 # dcgan.caffe: A pure caffe-python implementation of [DC-GAN](https://github.com/soumith/dcgan.torch)
-
-As far as I know, there is no light-weight implementation of DCGAN based on caffe.
-
-Inspired by [DeePSiM](http://lmb.informatik.uni-freiburg.de/resources/binaries/arxiv2016_alexnet_inversion_with_gans/release_deepsim_v0.5.zip) implementation, a few lines of python code can train the dcgan model quickly without any hack in caffe core lib ([Dosovitskiy](https://github.com/dosovits/caffe-fr-chairs/tree/deepsim) has already done this. However, I think the code could be merged back to master branch).
+Forked from https://github.com/samson-wang/dcgan.caffe
 
 ## Dependency
 You will need to compile the [deepsim-caffe-branch](https://github.com/dosovits/caffe-fr-chairs/tree/deepsim). And make sure your `PYTHONPATH` point to it.
+The deepsim-caffe only support cudnn-4.0. Disable the cudnn engine and replace some convolution layers with the master branch, a latest cudnn and cuda will work fine.
 
-The deepsim-caffe only support cudnn-4.0. If disable the cudnn engine and replace some convolution layers with the master branch, a latest cudnn and cuda will work fine.
+cd ~/git
+git clone https://github.com/dosovits/caffe-fr-chairs.git caffe-fr-chairs
+git checkout remote/origin/deepsim
+git branch
+cd caffe-fr-chairs
+mkdir build
+cd build
+cmake -DUSE_CUDNN=OFF ..    (To disable cudnn)
+make all
+sudo make install
 
-## Training
-For face generator, please prepare [celebA](https://github.com/soumith/dcgan.torch#11-train-a-face-generator-using-the-celeb-a-dataset) dataset as the link said. Then make a train list file and put it in the data.prototxt.
+## Use dcgan.caffe
+(1) Download img_align_celeba.zip from http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html under the link "Align&Cropped Images".
+    Extract to ~/data/img_align_celeba
 
-Just typing
-```
-python train.py
-```
+(2) Download or clone dcgan.caffe
+    cd ~/git
+    git clone https://github.com/joehuang74/dcgan.caffe.git dcgan.caffe
 
-## Train file list
-Each line has two columns seperated by space. The second column indicates the label of the corresponding image. Actually the label could be all zeros, since the training only need the images themselves to be the targets. 
+(3) Create training data list train.txt
+    cd ~/git/dcgan.caffe/data/celeba
+    ./create_list.sh
+ 
+(4) Modify data.prototxt to meet your needs
+    image_data_param {
+    	source: "/home/j/git/dcgan.caffe/data/celeba/train.txt"
+    	batch_size: 64
+    	new_height: 64
+    	new_width: 64
+    }
 
-The file should look like
+(5) Train models
+    cd ~/git/dcgan.caffe/examples/celeba
+    ./train.sh 
+  
+(6) Generate images
+    ./generate.sh
 
-```
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000001.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000002.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000003.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000004.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000005.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000006.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000007.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000008.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000009.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000010.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000011.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000012.jpg 0
-/data/Repo/dcgan.torch/celebA/img_align_celeba/000013.jpg 0
-...
-```
-## Trouble shooting
-- All your images' size should be `64x64`, which is specified in https://github.com/samson-wang/dcgan.caffe/blob/master/discriminator.prototxt
 
-- Please use the *deepsim* branch
-
-## Visualization
-To view the model result by
-```
-python generate.py generator.prototxt snapshots_test/4000/generator.caffemodel
-```
-
-The visualizations of the models at iteration 3000 and 4000 are as following:
-
-![3000](output/iter_3000.png)
-
-![4000](output/iter_4000.png)

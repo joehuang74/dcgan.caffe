@@ -15,5 +15,6 @@ stepvalue: 220000
 max_iter: 15000
 solver_mode: GPU
 solver_type: ADAM
+#type: "SGD"
 device_id: 0
 

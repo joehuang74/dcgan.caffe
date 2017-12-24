@@ -13,9 +13,9 @@ layer {
     mean_value: 123
   }
   image_data_param {
-    source: "/data/database/conf/celebA.txt"
+    source: "/home/j/git/dcgan.caffe/data/vehicle_v1/train.txt"
     batch_size: 64
-#    new_height: 256
-#    new_width: 256
+    new_height: 64
+    new_width: 64
   }
 }
